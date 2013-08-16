@@ -2,7 +2,6 @@
 
 class DB_base {
 
-    protected $dbdriver = 'mysqli';
     protected $hostname = '';
     protected $username = '';
     protected $password = '';
@@ -55,8 +54,8 @@ class DB_base {
     protected function connection() {/*{{{*/
 
         ($this->conn_id === FALSE) AND 
-            $this->conn_id= new mysqli($this->hostname, $this->username, $this->password);
-            //new PDO(DB_DSN, DB_USER, DB_PASS); 
+            $this->conn_id= new PDO('mysql:host='.$this->hostname, $this->username, $this->password);
+            //new mysqli($this->hostname, $this->username, $this->password); 
             //new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASSWD);
 
         if ( ! $this->conn_id) {

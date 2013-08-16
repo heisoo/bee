@@ -2,6 +2,7 @@
 
 include('pdo.php');
 
+
 class DB_active_record extends DB_base {
 
     private $table  = '';
