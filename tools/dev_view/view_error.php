@@ -3,7 +3,6 @@
 //set_error_handler("errorHandler"); 
 function phpError() { 
     $isError = false;
-
     if ($err = error_get_last()){
         switch($err['type']){
         case E_ERROR:
