@@ -1,9 +1,10 @@
 <?php
 
-include('pdo.php');
+ define("LIB",dirname(__FILE__));
+ include(LIB.'/pdodb.php');
 
 
-class DB_active_record extends DB_base {
+class DB_pipline extends PdoDb {
 
     private $table  = '';
     private $sql    = '';
@@ -105,24 +106,32 @@ class DB_active_record extends DB_base {
             $args = array_slice(func_get_args(), 1);
             foreach($args as $arg) {
                 $arg = $this->escape($arg);
+
                 $params = $this->str_replace_once('?', $arg, $params);
             }
         }
-
+//  Questions 
+        
         $statement = 'AND';
+        $test=array(0 => 'task.id = ?',1 => '1936');
+        echo "\n";
+/*
+        // print_r(func_get_args());
         if (in_array(strtoupper(end(func_get_args())), array('AND', 'OR'))) {
+//          if (in_array(strtoupper(end($test)), array('AND', 'OR'))) {
             $statement = end(func_get_args());
         }
-
+        
+       
+*/
         if (empty($this->cond)) {
             $this->cond = "WHERE $params";
         } else {
             $this->cond .= " $statement $params";
         }
-
         return $this;
-    }/*}}}*/
 
+    }/*}}}*/
     public function debug($l="\n", $r="\n", $break=false) {/*{{{*/
         $this->debug = array(
             'break' =>  $break,
