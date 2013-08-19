@@ -7,7 +7,7 @@ class PdoDb {
     protected $password = '';
     protected $database = '';
     protected $conn_id = FALSE;
- //  protected $result_id = FALSE;   
+//  protected $result_id = FALSE;   
     protected $affected_rows = 0;
     protected $error_no = FALSE;
     protected $error = FALSE;
@@ -86,7 +86,7 @@ class PdoDb {
      * @return  array
      */
 
-    protected function query($sql = '', $opt = 'array_assoc' , $hash = array()) {/*{{{*/
+    function query($sql = '', $opt = 'array_assoc' , $hash = array()) {/*{{{*/
 
         ($this->conn_id === FALSE) AND $this->connection();
 
