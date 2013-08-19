@@ -16,6 +16,9 @@ class PdoDb {
 
     // --------------------------------------------------------------------
 
+
+
+
     function __construct($params = '') {/*{{{*/
         $this->initialize($params);
     }/*}}}*/
