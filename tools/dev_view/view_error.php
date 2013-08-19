@@ -2,14 +2,16 @@
 //error_reporting(E_ERROR | E_WARNING | E_PARSE);  
 //set_error_handler("errorHandler"); 
 function phpError() { 
-    $isError = false;
-    if ($err = error_get_last()){
+
+    $isError = True;
+    $err = error_get_last();
+
+    if ($err){
         switch($err['type']){
-        case E_ERROR:
-        case E_CORE_ERROR:
-        case E_COMPILE_ERROR:
+        case E_NOTICE:
+            $isError = false;
+            break;
         case E_USER_ERROR:
-            $isError = true;
             break;
         }
     }
@@ -23,9 +25,10 @@ function phpError() {
         'time'      => BEE_BEGIN_TIME,
     );
 
-    $viewFile = 'view_error.tpl';
-    echo include($viewFile);
-
+    if($isError == True &isset($err) ){
+        $viewFile = 'view_error.tpl';
+        echo include($viewFile);
+    }
 }
 
 
