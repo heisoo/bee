@@ -70,7 +70,6 @@ class PdoDb {
      */
 
     protected function query($sql = '', $opt = 'array_assoc' , $hash = array()) {
-
         ($this->conn_id === FALSE) AND $this->connection();
 
         if (empty($sql)) return FALSE;
