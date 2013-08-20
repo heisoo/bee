@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class PdoDb {
 
@@ -7,18 +7,16 @@ class PdoDb {
     protected $password = '';
     protected $database = '';
     protected $conn_id = FALSE;
- //  protected $result_id = FALSE;   
+    protected $result_id = FALSE;   
     protected $affected_rows = 0;
     protected $error_no = FALSE;
     protected $error = FALSE;
     protected $char_set = 'UTF8';
     protected $db_debug = FALSE;
 
-    // --------------------------------------------------------------------
-
-    function __construct($params = '') {/*{{{*/
+    function __construct($params = '') {
         $this->initialize($params);
-    }/*}}}*/
+    }
 
     /**
      * initialize configuration
@@ -26,23 +24,18 @@ class PdoDb {
      * @access  public
      * @param   array, boolean
      */
-
-    protected function initialize($params) {/*{{{*/
+    protected function initialize($params) {
 
         if (is_array($params) AND ! empty($params)) {
-
             $i = 0;
             foreach ($params as $key => $val) {
                 $this->$key = ( ! isset($params[$i])) ? $val : $params[$i];
                 $i++;
             }
         }
-
         $auto_connection = isset($params['auto_connection']) ? $params['auto_connection'] : TRUE;
-
-        $auto_connection AND $this->connection();
-
-    }/*}}}*/
+        $auto_connection AND $this->connection($params['options']);
+    }
 
     /**
      * contection
@@ -51,28 +44,21 @@ class PdoDb {
      * @return  boolean
      */
 
-    protected function connection() {/*{{{*/
-        $options = array(
-             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-             PDO::ATTR_PERSISTENT => true,
+    protected function connection($options) {
+        empty($options) and $options = array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+            PDO::ATTR_PERSISTENT => true,
         ); 
 
         try {
-
             $this->conn_id= new PDO('mysql:host='.$this->hostname.';dbname=ticket', $this->username, $this->password ,$options);
-            //$this->conn_id = new PDO('mysql:host=localhost;dbname=myDatabase', $username, $password);
             $this->conn_id->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    
         } catch(PDOException $e) {
             echo 'ERROR: ' . $e->getMessage();
-            
+
         }
-
-        // Q: remove or ?
         return TRUE;
-
-    }/*}}}*/
+    }
 
 
     /**
@@ -83,74 +69,37 @@ class PdoDb {
      * @return  array
      */
 
-    protected function query($sql = '', $opt = 'array_assoc' , $hash = array()) {/*{{{*/
+    protected function query($sql = '', $opt = 'array_assoc' , $hash = array()) {
 
         ($this->conn_id === FALSE) AND $this->connection();
 
         if (empty($sql)) return FALSE;
         $result_id = $this->conn_id->query($sql);
-        $res=array();
-
-        //echo "$sql\n $opt\n$hash\n";
-
+        $res = array();
         $i=0;                                   
+
         if($opt != 'assign_key'){
-            $mode='PDO::'.strtoupper($opt);
-            while($row=$result_id->fetch($$mode)){   
-        //PDO::FETCH_OBJ 指定取出資料的型態
+            $mode = 'PDO::'.strtoupper($opt);
+            while($row = $result_id ->fetch($$mode)){   
                 array_push($res, $row);
             }
         }else{
 
-            while($row=$result_id->fetch(PDO::FETCH_ASSOC)){   
+            while($row = $result_id->fetch(PDO::FETCH_ASSOC)){   
                 $res_name='res';   
                 $res[$row[$hash]]=$row;                               
-/*                                                          
-            foreach($hash['value'] as $v){                 
-                $eval_str='$'.$res_name."[$i]['$v']='".$$v."';";
-                eval($eval_str);                               
-                                                              
-            }                                                
-*/                                                     
-            $i++;                              
+
+                $i++;                              
+            }
         }
+        return $res;
     }
 
-
-    return $res;
-
-/*
-
-        $arr_opts = array (
-            'array_num'     =>  array( 'func' => 'fetch_array',  'paras' => MYSQLI_NUM),
-            'array_assoc'   =>  array( 'func' => 'fetch_array',  'paras' => MYSQLI_ASSOC),
-            'array_both'    =>  array( 'func' => 'fetch_array',  'paras' => MYSQLI_BOTH),
-            'object'        =>  array( 'func' => 'fetch_object', 'paras' => ''),
-            'single'        =>  array( 'func' => 'fetch_single', 'paras' => MYSQLI_ASSOC),
-            'hash'          =>  array( 'func' => 'fetch_hash'  , 'paras' => $hash ),
-            'assign_key'    =>  array( 'func' => 'fetch_assign_key'  , 'paras' => $hash ),
-        );
-x
-        $call_fetch_fun = isset($arr_opts[$opt]) ? $arr_opts[$opt] : $arr_opts['array_num'];
-
-        return $this->$call_fetch_fun['func']($call_fetch_fun['paras']);
-        */
-
-    }/*}}}*/
-
-    /**
-     * exec insert, update, delete etc.
-     *
-     * @access  public
-     * @param   string
-     * @return  integer
-     */
-
-    public function exec($data = '') {/*{{{*/
+    public function exec($data = '') {
 
         ($this->conn_id === FALSE) AND $this->connection();
-        
-        if(!is_array($data)){
+
+        if( !is_array($data) ){
 
             $this->conn_id->exec($data);
 
@@ -159,10 +108,7 @@ x
             // you have to fill something
         }
 
-
-//        $this->affected_rows = mysqli_affected_rows($this->conn_id);
-//        return $this->affected_rows;
-    }/*}}}*/
+    }
 
     /**
      * explain select
@@ -172,7 +118,7 @@ x
      * @return  array
      */
 
-    public function explain($sql, $opt = 'array_assoc') {/*{{{*/
+    public function explain($sql, $opt = 'array_assoc') {
 
         ($this->conn_id === FALSE) AND $this->connection();
 
@@ -180,7 +126,7 @@ x
 
         $sql = "EXPLAIN $sql";
         return current($this->query($sql, $opt));
-    }/*}}}*/
+    }
 
     /**
      * get last_insert_id
@@ -190,27 +136,33 @@ x
      */
 
     // no test 大错特错
-    public function last_insert_id() {/*{{{*/
-
+    public function last_insert_id() {
         ($this->conn_id === FALSE) AND $this->connection();
-        //$result = mysqli_query($this->conn_id, "select LAST_INSERT_ID() as `last_insert_id`");
         return $this->conn_id->lastInsertId();
+    }
 
-    }/*}}}*/
+    public function prepare($sql){ 
+        ($this->conn_id === FALSE) AND $this->connection();
 
-     /**
+        $args = func_get_args();
+        array_shift($args); 
+
+        $reponse = $this->conn_id->prepare($sql);
+        $reponse->execute($args);
+        return $reponse;
+    }
+
+    /**
      * escape string
      *
      * @access  public
      * @return  integer
      */
 
-     public function escape($str) {/*{{{*/
+    public function escape($str) {
         ($this->conn_id === FALSE) AND $this->connection();
         return $this->conn_id->quote($str);
-    }/*}}}*/
-
-
+    }
 
     /**
      * get affected_rows
@@ -219,12 +171,12 @@ x
      * @return  integer
      */
 
-    protected function affected_rows() {/*{{{*/
-        return $this->affected_rows;
-    }/*}}}*/
+    protected function affected_rows() {
+        return $this->conn_id->rowCount();
+    }
 
-
-  
+    protected function close() {
+         $this->conn_id  = null;
+    }
 }
-
 ?>

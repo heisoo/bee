@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
  define("LIB",dirname(__FILE__));
  include(LIB.'/pdodb.php');
@@ -15,17 +15,17 @@ class DB_pipline extends PdoDb {
     private $having = '';
     private $debug  = false;
 
-    public function __construct($params = '') {/*{{{*/
+    public function __construct($params = '') {
         parent::__construct($params);
-    }/*}}}*/
+    }
 
-    public function table($name = 'name') {/*{{{*/
+    public function table($name = 'name') {
         $this->clear();
         $this->table = $name;
         return $this;
-    }/*}}}*/
+    }
 
-    public function getList($getField=false, $opt = 'array_assoc') {/*{{{*/
+    public function getList($getField=false, $opt = 'array_assoc') {
         $this->sql = "SELECT {$this->column} FROM {$this->table} ";
         empty($this->cond)      || ( $this->sql .= $this->cond );
         empty($this->group)     || ( $this->sql .= $this->group );
@@ -36,9 +36,9 @@ class DB_pipline extends PdoDb {
         if ($getField && $opt == 'array_assoc') { $res = $this->getField($res); }
 
         return $res;
-    }/*}}}*/
+    }
 
-    public function getNum($num = 1, $start = 0, $getField = false, $opt = 'array_assoc') {/*{{{*/
+    public function getNum($num = 1, $start = 0, $getField = false, $opt = 'array_assoc') {
         if ((int)$num <= 0) {
             return array();
         }
@@ -54,9 +54,9 @@ class DB_pipline extends PdoDb {
         if ($getField && $opt == 'array_assoc') { $res = $this->getField($res); }
 
         return $res;
-    }/*}}}*/
+    }
 
-    public function getCount() {/*{{{*/
+    public function getCount() {
         $this->sql = "SELECT count(*) as count FROM {$this->table} ";
         empty($this->cond)      || ( $this->sql .= $this->cond );
         empty($this->group)     || ( $this->sql .= $this->group );
@@ -66,9 +66,9 @@ class DB_pipline extends PdoDb {
         $count = current($this->query($this->sql, 'object'))->count;
 
         return $count;
-    }/*}}}*/
+    }
 
-    public function getItem($id_name, $id, $opt = 'array_assoc') {/*{{{*/
+    public function getItem($id_name, $id, $opt = 'array_assoc') {
         if (empty($this->table)) {
             echo 'table name is empty';
             return 0;
@@ -83,9 +83,9 @@ class DB_pipline extends PdoDb {
         $item = current($this->query($this->sql, $opt));
 
         return $item;
-    }/*}}}*/
+    }
 
-    public function select($params = '*') {/*{{{*/
+    public function select($params = '*') {
         if (is_string($params)) {
             if ($this->column == '*') {
                 $this->column = $params;
@@ -97,9 +97,9 @@ class DB_pipline extends PdoDb {
         }
 
         return $this;
-    }/*}}}*/
+    }
 
-    public function where($params = '') {/*{{{*/
+    public function where($params = '') {
         if (empty($params)) return $this;
 
         if (func_num_args() >= 2) {
@@ -131,17 +131,17 @@ class DB_pipline extends PdoDb {
         }
         return $this;
 
-    }/*}}}*/
-    public function debug($l="\n", $r="\n", $break=false) {/*{{{*/
+    }
+    public function debug($l="\n", $r="\n", $break=false) {
         $this->debug = array(
             'break' =>  $break,
             'l'     =>  $l,
             'r'     =>  $r,
         );
         return $this;
-    }/*}}}*/
+    }
 
-    public function order($fields, $order = '') {/*{{{*/
+    public function order($fields, $order = '') {
 
         if (empty($this->order)) {
             $this->order = " ORDER BY {$fields} {$order} ";
@@ -150,29 +150,29 @@ class DB_pipline extends PdoDb {
         }
 
         return $this;
-    }/*}}}*/
+    }
 
-    public function group($fields) {/*{{{*/
+    public function group($fields) {
         if (is_string($fields)) {
             $this->group = " GROUP BY {$fields} ";
         }
 
         return $this;
-    }/*}}}*/
+    }
 
-    public function having($params) {/*{{{*/
+    public function having($params) {
         if (is_string($params)) {
             $this->having = " having {$params} ";
         }
 
         return $this;
-    }/*}}}*/
+    }
 
-    public function getFirst() {/*{{{*/
+    public function getFirst() {
         return current($this->getNum(1));
-    }/*}}}*/
+    }
 
-    public function insert($params = '', $replace_flag = false) {/*{{{*/
+    public function insert($params = '', $replace_flag = false) {
         if (empty($this->table)) {
             echo 'table name is empty';
             return 0;
@@ -199,9 +199,9 @@ class DB_pipline extends PdoDb {
         $this->sql = "{$statement} INTO {$this->table} (`$fields`) VALUES (\"$values\")";
 
         return $this->exec($this->sql);
-    }/*}}}*/
+    }
 
-    public function batch_insert($params, $replace_flag = false) {/*{{{*/
+    public function batch_insert($params, $replace_flag = false) {
         if ( ! is_array($params)) {
             return false;
         }
@@ -212,9 +212,9 @@ class DB_pipline extends PdoDb {
         }
 
         return $res;
-    }/*}}}*/
+    }
     
-    public function update($params = '') {/*{{{*/
+    public function update($params = '') {
         if (empty($this->table)) {
             echo 'table name is empty';
             return 0;
@@ -245,9 +245,9 @@ EOF;
         $res = $this->exec($this->sql);
 
         return $res;
-    }/*}}}*/
+    }
 
-    public function save($params = '', $primary_key = '') {/*{{{*/
+    public function save($params = '', $primary_key = '') {
         if (empty($this->table)) {
             echo 'table name is empty';
             return 0;
@@ -271,9 +271,9 @@ EOF;
         }
 
         return $affected_rows;
-    }/*}}}*/
+    }
 
-    public function delete() {/*{{{*/
+    public function delete() {
         if (empty($this->table)) {
             echo 'table name is empty';
             return 0;
@@ -284,9 +284,9 @@ EOF;
 
         return $this->exec($this->sql);
 
-    }/*}}}*/
+    }
 
-    private function getField($res, $field=''){/*{{{*/
+    private function getField($res, $field=''){
 
         $data = array();
         if (empty($res)) return $data;
@@ -299,7 +299,7 @@ EOF;
             }
         }
         return $data;
-    }/*}}}*/
+    }
 
     private function str_replace_once($needle, $replace, $haystack) {
         $pos = strpos($haystack, $needle);
@@ -309,7 +309,7 @@ EOF;
         return substr_replace($haystack, $replace, $pos, strlen($needle));
     }
 
-    public function query($sql = '', $opt = 'array_assoc' , $hash = array()) {/*{{{*/
+    public function query($sql = '', $opt = 'array_assoc' , $hash = array()) {
 
         if ($d = $this->debug) {
             echo "{$d['l']} " . $this->sql . " {$d['r']}";
@@ -319,7 +319,7 @@ EOF;
         return parent::query($sql, $opt, $hash);
     }
 
-    public function exec($sql = '') {/*{{{*/
+    public function exec($sql = '') {
 
         if ($d = $this->debug) {
             echo "{$d['l']} " . $this->sql . " {$d['r']}";
@@ -329,7 +329,7 @@ EOF;
         return parent::exec($sql);
     }
 
-    private function clear() {/*{{{*/
+    private function clear() {
         $this->table    = '';
         $this->column   = '*';
         $this->cond     = '';
@@ -337,9 +337,7 @@ EOF;
         $this->having   = '';
         $this->order    = '';
         $this->debug    = false;
-    }/*}}}*/
-
+    }
 }
-
 
 ?>
