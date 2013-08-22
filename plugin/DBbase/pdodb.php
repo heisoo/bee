@@ -46,16 +46,15 @@ class PdoDb {
 
     protected function connection($options) {
         empty($options) and $options = array(
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$this->char_set,
             PDO::ATTR_PERSISTENT => true,
         ); 
 
         try {
-            $this->conn_id= new PDO('mysql:host='.$this->hostname.';dbname=ticket', $this->username, $this->password ,$options);
+            $this->conn_id= new PDO('mysql:host='.$this->hostname.';dbname='.$this->database, $this->username, $this->password ,$options);
             $this->conn_id->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
-            echo 'ERROR: ' . $e->getMessage();
-
+            $this->exception('ERROR: ' . $e->getMessage());
         }
         return TRUE;
     }
@@ -74,6 +73,8 @@ class PdoDb {
 
         if (empty($sql)) return FALSE;
         $result_id = $this->conn_id->query($sql);
+
+
         $res = array();
         $i=0;                                   
 
@@ -94,9 +95,12 @@ class PdoDb {
         return $res;
     }
 
+
+
     public function exec($data = '') {
 
-        ($this->conn_id === FALSE) AND $this->connection();
+        ($this->conn_id === FALSE) and $this->connection();
+
 
         if( !is_array($data) ){
 
@@ -106,6 +110,11 @@ class PdoDb {
 
             // you have to fill something
         }
+
+         //PDOStatement::rowCount();
+
+
+        return $this->conn_id->rowCount();
 
     }
 
@@ -134,7 +143,6 @@ class PdoDb {
      * @return  integer
      */
 
-    // no test 大错特错
     public function last_insert_id() {
         ($this->conn_id === FALSE) AND $this->connection();
         return $this->conn_id->lastInsertId();
@@ -163,19 +171,15 @@ class PdoDb {
         return $this->conn_id->quote($str);
     }
 
-    /**
-     * get affected_rows
-     *
-     * @access  public
-     * @return  integer
-     */
-
-    protected function affected_rows() {
-        return $this->conn_id->rowCount();
-    }
-
     protected function close() {
          $this->conn_id  = null;
     }
+
+    protected function exception($err){
+
+
+    }
+
+
 }
 ?>
